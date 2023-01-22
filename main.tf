@@ -117,7 +117,7 @@ resource "libvirt_volume" "controller" {
   name             = "${var.prefix}_c${count.index}.img"
   base_volume_name = "talos-1.3.2-amd64.qcow2"
   format           = "qcow2"
-  size             = 40 * 1024 * 1024 * 1024 # 40GiB.
+  size             = 120 * 1024 * 1024 * 1024 # 120GiB.
 }
 
 # see https://github.com/dmacvicar/terraform-provider-libvirt/blob/v0.7.1/website/docs/r/volume.html.markdown
@@ -126,7 +126,7 @@ resource "libvirt_volume" "worker" {
   name             = "${var.prefix}_w${count.index}.img"
   base_volume_name = "talos-1.3.2-amd64.qcow2"
   format           = "qcow2"
-  size             = 40 * 1024 * 1024 * 1024 # 40GiB.
+  size             = 120 * 1024 * 1024 * 1024 # 120GiB.
 }
 
 # see https://github.com/dmacvicar/terraform-provider-libvirt/blob/v0.7.1/website/docs/r/domain.html.markdown
@@ -139,9 +139,23 @@ resource "libvirt_domain" "controller" {
   vcpu   = 8
   memory = 32 * 1024
   disk {
-    volume_id = libvirt_volume.controller[count.index].id
-    scsi      = true
+    volume_id   = libvirt_volume.controller[count.index].id
+    scsi        = true
+    unit_number = 0
+    size        = 40
   }
+  disk {
+    volume_id   = libvirt_volume.controller[count.index].id
+    scsi        = true
+    unit_number = 1
+    size        = 40
+  }
+  disk {
+    volume_id   = libvirt_volume.controller[count.index].id
+    scsi        = true
+    unit_number = 2
+    size        = 40
+  }    
   network_interface {
     network_id = libvirt_network.talos.id
     addresses  = [local.controller_nodes[count.index].address]
@@ -158,8 +172,22 @@ resource "libvirt_domain" "worker" {
   vcpu   = 8
   memory = 32 * 1024
   disk {
-    volume_id = libvirt_volume.worker[count.index].id
-    scsi      = true
+    volume_id   = libvirt_volume.worker[count.index].id
+    scsi        = true
+    unit_number = 0
+    size        = 40
+  }
+  disk {
+    volume_id   = libvirt_volume.worker[count.index].id
+    scsi        = true
+    unit_number = 1
+    size        = 40
+  }
+  disk {
+    volume_id   = libvirt_volume.worker[count.index].id
+    scsi        = true
+    unit_number = 2
+    size        = 40
   }
   network_interface {
     network_id = libvirt_network.talos.id
