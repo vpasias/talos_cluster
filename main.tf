@@ -119,12 +119,40 @@ resource "libvirt_volume" "controller" {
   format           = "qcow2"
   size             = 120 * 1024 * 1024 * 1024 # 120GiB.
 }
+    
+resource "libvirt_volume" "cad1" {
+  count            = var.controller_count
+  name             = "${var.prefix}_cad1${count.index}.img"
+  format           = "qcow2"
+  size             = 120 * 1024 * 1024 * 1024 # 120GiB.
+}
+    
+resource "libvirt_volume" "cad2" {
+  count            = var.controller_count
+  name             = "${var.prefix}_cad2${count.index}.img"
+  format           = "qcow2"
+  size             = 120 * 1024 * 1024 * 1024 # 120GiB.
+}
 
 # see https://github.com/dmacvicar/terraform-provider-libvirt/blob/v0.7.1/website/docs/r/volume.html.markdown
 resource "libvirt_volume" "worker" {
   count            = var.worker_count
   name             = "${var.prefix}_w${count.index}.img"
   base_volume_name = "talos-1.3.2-amd64.qcow2"
+  format           = "qcow2"
+  size             = 120 * 1024 * 1024 * 1024 # 120GiB.
+}
+    
+resource "libvirt_volume" "wad1" {
+  count            = var.worker_count
+  name             = "${var.prefix}_wad1${count.index}.img"
+  format           = "qcow2"
+  size             = 120 * 1024 * 1024 * 1024 # 120GiB.
+}
+    
+resource "libvirt_volume" "wad2" {
+  count            = var.worker_count
+  name             = "${var.prefix}_wad2${count.index}.img"
   format           = "qcow2"
   size             = 120 * 1024 * 1024 * 1024 # 120GiB.
 }
@@ -141,20 +169,14 @@ resource "libvirt_domain" "controller" {
   disk {
     volume_id   = libvirt_volume.controller[count.index].id
     scsi        = true
-    unit_number = 0
-    size        = 40
   }
   disk {
-    volume_id   = libvirt_volume.controller[count.index].id
+    volume_id   = libvirt_volume.cad1[count.index].id
     scsi        = true
-    unit_number = 1
-    size        = 40
   }
   disk {
-    volume_id   = libvirt_volume.controller[count.index].id
+    volume_id   = libvirt_volume.cad2[count.index].id
     scsi        = true
-    unit_number = 2
-    size        = 40
   }    
   network_interface {
     network_id = libvirt_network.talos.id
@@ -174,20 +196,14 @@ resource "libvirt_domain" "worker" {
   disk {
     volume_id   = libvirt_volume.worker[count.index].id
     scsi        = true
-    unit_number = 0
-    size        = 40
   }
   disk {
-    volume_id   = libvirt_volume.worker[count.index].id
+    volume_id   = libvirt_volume.wad1[count.index].id
     scsi        = true
-    unit_number = 1
-    size        = 40
   }
   disk {
-    volume_id   = libvirt_volume.worker[count.index].id
+    volume_id   = libvirt_volume.wad2[count.index].id
     scsi        = true
-    unit_number = 2
-    size        = 40
   }
   network_interface {
     network_id = libvirt_network.talos.id
