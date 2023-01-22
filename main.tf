@@ -136,8 +136,8 @@ resource "libvirt_domain" "controller" {
   cpu {
     mode = "host-passthrough"
   }
-  vcpu   = 6
-  memory = 24 * 1024
+  vcpu   = 8
+  memory = 32 * 1024
   disk {
     volume_id = libvirt_volume.controller[count.index].id
     scsi      = true
