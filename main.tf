@@ -49,7 +49,7 @@ variable "controller_count" {
 
 variable "worker_count" {
   type    = number
-  default = 1
+  default = 3
   validation {
     condition     = var.worker_count >= 1
     error_message = "Must be 1 or more."
@@ -136,8 +136,8 @@ resource "libvirt_domain" "controller" {
   cpu {
     mode = "host-passthrough"
   }
-  vcpu   = 4
-  memory = 2 * 1024
+  vcpu   = 6
+  memory = 24 * 1024
   disk {
     volume_id = libvirt_volume.controller[count.index].id
     scsi      = true
@@ -155,8 +155,8 @@ resource "libvirt_domain" "worker" {
   cpu {
     mode = "host-passthrough"
   }
-  vcpu   = 4
-  memory = 2 * 1024
+  vcpu   = 8
+  memory = 32 * 1024
   disk {
     volume_id = libvirt_volume.worker[count.index].id
     scsi      = true
